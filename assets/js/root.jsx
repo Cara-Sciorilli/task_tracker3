@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { Link, BrowserRouter as Router, Route } from 'react-router-dom';
 import _ from 'lodash';
 import $ from 'jquery';
-
+import { Provider } from 'react-redux';
 
 import Header from './components/header';
 import UserList from './components/user_list';
@@ -13,6 +13,12 @@ import TaskForm from './components/task_form';
 
 export default function root_init(node) {
   let tasks = window.tasks;
+  /* TODO:
+    ReactDOM.render(
+      <Provider store={store}>
+        <Root tasks={tasks} />
+      </Provider>, node);
+  */
   ReactDOM.render(<Root tasks={tasks} />, node);
 }
 
@@ -59,6 +65,26 @@ class Root extends React.Component {
     });
   }
 
+  mark_complete(task) {
+    task.complete = true;
+    $.ajax("/api/v1/tasks", {
+      method: "put",
+      dataType: "json",
+      contentType: "application/json; charset=UTF-8",
+      data: JSON.stringify(task),
+    });
+  }
+
+  track_time(task, time) {
+    task.time = time;
+    $.ajax("/api/v1/tasks", {
+      method: "put",
+      dataType: "json",
+      contentType: "application/json; charset=UTF-8",
+      data: JSON.stringify(task),
+    });
+  }
+
   logout() {
     this.update_login_form({email: "", password: ""})
     let state1 = _.assign({}, this.state, { session: null });
@@ -89,7 +115,7 @@ class Root extends React.Component {
       <div>
         <Header session={this.state.session} root={this}/>
         <Route path="/" exact={true} render={() =>
-          <TaskList tasks={this.state.tasks} />
+          <TaskList root={this} tasks={this.state.tasks} />
         } />
         <Route path="/users" exact={true} render={() =>
           <UserList users={this.state.users} />

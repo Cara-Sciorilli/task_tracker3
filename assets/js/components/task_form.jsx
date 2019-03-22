@@ -49,7 +49,7 @@ class TaskForm extends React.Component {
           </select>
           <br/>
           <label htmlFor="time">Enter Time: </label>
-          <input id="time" name="time" type="time" />
+          <input id="time" name="time" />
           <br/>
           <label htmlFor="complete">Is Completed?: </label>
           <select id="complete" name="complete" type="complete">

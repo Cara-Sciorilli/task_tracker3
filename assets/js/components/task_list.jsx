@@ -1,9 +1,13 @@
 import React from 'react';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 export default function TaskList(props) {
-  let tasks = _.map(props.tasks, (t) => <Task key={t.id} task={t} />);
+  // TODO:
+  //let {tasks, dispatch} = props;
+  let {root, tasks} = props;
+  tasks = _.map(tasks, (t) => <Task key={t.id} root={root} task={t} />);
   return <div class="container">
     <div className="row">
       <h2></h2>
@@ -20,7 +24,7 @@ export default function TaskList(props) {
 }
 
 function Task(props) {
-  let {task} = props;
+  let {root, task} = props;
   let completed = "No"
   if (task.complete) {
     completed = "Yes"
@@ -36,6 +40,11 @@ function Task(props) {
       Time: {task.time}
       <br/>
       Completed: {completed}
+      <br/>
+      <button className="btn btnView" onClick={() => root.mark_complete(task)}>Mark Complete</button>
+      <br/>
+      Enter New Time Taken:
+      <input placeholder="time" onChange={(ev) => root.track_time(task, ev.target.value)} />
       </p>
     </div>
   </div>;
