@@ -1,0 +1,18 @@
+/* This file is for your main application css. */
+$body-bg: #B8EAF4;
+@import "~bootstrap/scss/bootstrap";
+@import url('https://fonts.googleapis.com/css?family=Laila');
+
+body {
+  font-family: 'Laila', serif;
+}
+.btnView {
+  background-color: pink;
+}
+.btnNew {
+  background-color: #6BC44A;
+}
+
+.topRow {
+  background-color: #2C93C9;
+}
