@@ -7,25 +7,8 @@ class TaskForm extends React.Component {
     super(props);
     this.state = {
       users: props.users,
+      root: props.root,
     }
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  handleSubmit(event) {
-    event.preventDefault();
-    var formData = new FormData(event.target);
-    var object = {};
-    formData.forEach(function(value, key){
-      object[key] = value;
-    })
-    var data = JSON.stringify(object);
-
-    $.ajax("/api/v1/tasks", {
-      method: 'post',
-      dataType: "json",
-      contentType: "application/json; charset=UTF-8",
-      data: data,
-    });
   }
 
   render() {
@@ -36,20 +19,24 @@ class TaskForm extends React.Component {
         <div className="row">
           <h2></h2>
         </div>
-        <form onSubmit={this.handleSubmit}>
+        <form onSubmit={this.state.root.handle_task_submit}>
           <label htmlFor="name">Enter Name: </label>
           <input id="name" name="name" type="name" />
           <br/>
+          <br/>
           <label htmlFor="desc">Enter Description: </label>
           <input id="desc" name="desc" type="desc" />
+          <br/>
           <br/>
           <label htmlFor="user_id">Select User: </label>
           <select id="user_id" name="user_id" type="user_id">
             {usersSelect}
           </select>
           <br/>
+          <br/>
           <label htmlFor="time">Enter Time: </label>
-          <input id="time" name="time" />
+          <input id="time" name="time" type="number" step="15"/>
+          <br/>
           <br/>
           <label htmlFor="complete">Is Completed?: </label>
           <select id="complete" name="complete" type="complete">
@@ -57,7 +44,8 @@ class TaskForm extends React.Component {
             <option value="true"> Yes </option>
           </select>
           <br/>
-          <button className="btn btn-info">Add New Task</button>
+          <br/>
+          <button className="btn btn-info">Submit New Task</button>
         </form>
       </div>
     );

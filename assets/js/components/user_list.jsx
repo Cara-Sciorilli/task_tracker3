@@ -9,6 +9,9 @@ export default function UserList(props) {
     <h2></h2>
   </div>
   <div className="row">
+    <h2></h2>
+  </div>
+  <div className="row">
     <h2>Users List</h2>
   </div>
   <div className="row">
@@ -25,8 +28,6 @@ export default function UserList(props) {
       </table>
     </div>
   </div>
-  <Link to={"/tasks/new"}><button className="btn btnNew">Add New Task</button></Link>
-  <Link to={"/users/new"}><button className="btn btnView">Register New User</button></Link>
   </div>;
 }
 

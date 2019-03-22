@@ -3,27 +3,11 @@ import _ from 'lodash';
 import $ from 'jquery';
 
 class UserForm extends React.Component {
-  constructor(){
-    super();
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  handleSubmit(event) {
-    event.preventDefault();
-    var formData = new FormData(event.target);
-    var object = {};
-    formData.forEach(function(value, key){
-      object[key] = value;
-    })
-    console.log(object)
-    var data = JSON.stringify(object);
-    console.log(data)
-    $.ajax("/api/v1/users", {
-      method: 'post',
-      dataType: "json",
-      contentType: "application/json; charset=UTF-8",
-      data: data,
-    });
+  constructor(props){
+    super(props);
+    this.state = {
+      root: props.root,
+    }
   }
 
   render() {
@@ -32,14 +16,16 @@ class UserForm extends React.Component {
         <div className="row">
           <h2></h2>
         </div>
-        <form onSubmit={this.handleSubmit}>
+        <form onSubmit={this.state.root.handle_user_submit}>
           <label htmlFor="email">Enter Email: </label>
           <input id="email" name="email" type="email" />
           <br/>
-          <label htmlFor="password">Enter Password: </label>
-          <input id="password" name="password" type="password" />
           <br/>
-          <button className="btn btn-info">Register User</button>
+          <label htmlFor="password_hash">Enter Password: </label>
+          <input id="password_hash" name="password_hash" type="password" />
+          <br/>
+          <br/>
+          <button className="btn btn-info">Submit New User</button>
         </form>
       </div>
     );

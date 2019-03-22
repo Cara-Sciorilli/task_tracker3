@@ -67,21 +67,77 @@ class Root extends React.Component {
 
   mark_complete(task) {
     task.complete = true;
-    $.ajax("/api/v1/tasks", {
+    $.ajax("/api/v1/tasks/"+task.id, {
       method: "put",
       dataType: "json",
       contentType: "application/json; charset=UTF-8",
-      data: JSON.stringify(task),
+      data: JSON.stringify({task}),
+      success: (resp) => {
+        let newTasks = this.state.tasks.map((t) => {
+          if (t.id === resp.data.id) {
+            return resp.data
+          }
+          else {
+            return t
+          }
+        })
+        this.setState({tasks: newTasks});
+      },
+    });
+  }
+
+  handle_user_submit(event) {
+    event.preventDefault();
+    var formData = new FormData(event.target);
+    var object = {};
+    formData.forEach(function(value, key){
+      object[key] = value;
+    })
+
+    var data = JSON.stringify({user: object});
+    $.ajax("/api/v1/users", {
+      method: 'post',
+      dataType: "json",
+      contentType: "application/json; charset=UTF-8",
+      data: data,
+    });
+  }
+
+  handle_task_submit(event) {
+    event.preventDefault();
+    var formData = new FormData(event.target);
+    var object = {};
+    formData.forEach(function(value, key){
+      object[key] = value;
+    })
+    var data = JSON.stringify({task: object});
+
+    $.ajax("/api/v1/tasks", {
+      method: 'post',
+      dataType: "json",
+      contentType: "application/json; charset=UTF-8",
+      data: data,
     });
   }
 
   track_time(task, time) {
     task.time = time;
-    $.ajax("/api/v1/tasks", {
+    $.ajax("/api/v1/tasks/"+task.id, {
       method: "put",
       dataType: "json",
       contentType: "application/json; charset=UTF-8",
-      data: JSON.stringify(task),
+      data: JSON.stringify({task}),
+      success: (resp) => {
+        let newTasks = this.state.tasks.map((t) => {
+          if (t.id === resp.data.id) {
+            return resp.data
+          }
+          else {
+            return t
+          }
+        })
+        this.setState({tasks: newTasks});
+      },
     });
   }
 
@@ -121,10 +177,10 @@ class Root extends React.Component {
           <UserList users={this.state.users} />
         } />
         <Route path="/users/new" exact={true} render={() =>
-          <UserForm />
+          <UserForm root={this}/>
         } />
         <Route path="/tasks/new" exact={true} render={() =>
-          <TaskForm users={this.state.users} />
+          <TaskForm users={this.state.users} root={this}/>
         } />
       </div>
     </Router>;

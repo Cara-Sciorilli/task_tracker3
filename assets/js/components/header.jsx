@@ -18,7 +18,8 @@ export default function Header(props) {
       <button className="btn btn-info" onClick={() => root.logout()}>Logout</button>
     </div>
   }
-  return (<nav className="navbar navbar-expand-sm navbar-light bg-white">
+  return (<div>
+    <nav className="navbar navbar-expand-sm navbar-light bg-white">
     <div className="container">
       <div className="col-4">
         <a className="navbar-brand">Task Tracker 3</a>
@@ -37,5 +38,9 @@ export default function Header(props) {
         {session_info}
       </div>
     </div>
-  </nav>)
+  </nav>
+  <Link to={"/tasks/new"}><button className="btn btnNew">Add New Task</button></Link>
+  <Link to={"/users/new"}><button className="btn btnView">Register New User</button></Link>
+  </div>
+)
 }

@@ -18,16 +18,22 @@ export default function TaskList(props) {
     <div className="row">
       {tasks}
     </div>
-    <Link to={"/tasks/new"}><button className="btn btnNew">Add New Task</button></Link>
-    <Link to={"/users/new"}><button className="btn btnView">Register New User</button></Link>
   </div>;
 }
 
 function Task(props) {
   let {root, task} = props;
   let completed = "No"
+  let button = <button className="btn btnView" onClick={() => root.mark_complete(task)}>Mark Complete</button>;
+  let timeTitle = "Enter New Time Taken:";
+  let trackTime = <input type="number" step="15" onChange={(ev) => root.track_time(task, ev.target.value)}/>;
+  let line = <br/>;
   if (task.complete) {
     completed = "Yes"
+    button = ""
+    timeTitle = ""
+    trackTime = ""
+    line = ""
   }
   return <div className="card col-4">
     <div className="card-body">
@@ -40,11 +46,11 @@ function Task(props) {
       Time: {task.time}
       <br/>
       Completed: {completed}
-      <br/>
-      <button className="btn btnView" onClick={() => root.mark_complete(task)}>Mark Complete</button>
-      <br/>
-      Enter New Time Taken:
-      <input placeholder="time" onChange={(ev) => root.track_time(task, ev.target.value)} />
+      {line}
+      {button}
+      {line}
+      {timeTitle}
+      {trackTime}
       </p>
     </div>
   </div>;
