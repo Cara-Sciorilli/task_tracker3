@@ -1,9 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Link, BrowserRouter as Router, Route } from 'react-router-dom';
+import { Link, Router as Router, Route } from 'react-router-dom';
+import { createBrowserHistory } from 'history';
 import _ from 'lodash';
 import $ from 'jquery';
-import { Provider } from 'react-redux';
+import { Provider, connect } from 'react-redux';
+import store from './store';
 
 import Header from './components/header';
 import UserList from './components/user_list';
@@ -11,15 +13,21 @@ import TaskList from './components/task_list';
 import UserForm from './components/user_form';
 import TaskForm from './components/task_form';
 
-export default function root_init(node) {
+const history = createBrowserHistory();
+
+function state2props(state) {
+  return state;
+}
+
+export default function root_init(node, store) {
   let tasks = window.tasks;
-  /* TODO:
-    ReactDOM.render(
+  let ConnectedRoot = connect(state2props)(Root);
+  ReactDOM.render(
+    <Router history={history}>
       <Provider store={store}>
-        <Root tasks={tasks} />
-      </Provider>, node);
-  */
-  ReactDOM.render(<Root tasks={tasks} />, node);
+        <ConnectedRoot />
+      </Provider>
+    </Router>, node);
 }
 
 class Root extends React.Component {
@@ -27,13 +35,12 @@ class Root extends React.Component {
     super(props);
     this.state = {
       login_form: {email: "", password: ""},
-      session: null,
-      tasks: props.tasks,
-      users: [],
     };
 
-    //this.fetch_tasks();
+    this.fetch_tasks();
     this.fetch_users();
+
+    this.handle_task_submit = this.handle_task_submit.bind(this)
   }
 
   fetch_tasks() {
@@ -43,8 +50,10 @@ class Root extends React.Component {
       contentType: "application/json; charset=UTF-8",
       data: "",
       success: (resp) => {
-        let state1 = _.assign({}, this.state, { tasks: resp.data });
-        this.setState(state1);
+        store.dispatch({
+          type: 'TASK_LIST',
+          data: resp.data,
+        })
       },
     });
   }
@@ -56,8 +65,10 @@ class Root extends React.Component {
       contentType: "application/json; charset=UTF-8",
       data: JSON.stringify(this.state.login_form),
       success: (resp) => {
-        let state1 = _.assign({}, this.state, { session: resp.data });
-        this.setState(state1);
+        store.dispatch({
+          type: 'NEW_SESSION',
+          data: resp.data,
+        })
       },
       error: () => {
         alert("Incorrect Username and Password")
@@ -66,28 +77,28 @@ class Root extends React.Component {
   }
 
   mark_complete(task) {
+    event.preventDefault()
     task.complete = true;
     $.ajax("/api/v1/tasks/"+task.id, {
       method: "put",
       dataType: "json",
+      headers: {"x-auth": this.props.session.token},
       contentType: "application/json; charset=UTF-8",
       data: JSON.stringify({task}),
+      error: () => {
+        alert("Need Authorization")
+      },
       success: (resp) => {
-        let newTasks = this.state.tasks.map((t) => {
-          if (t.id === resp.data.id) {
-            return resp.data
-          }
-          else {
-            return t
-          }
+        store.dispatch({
+          type: 'TASK_EDIT',
+          data: resp.data,
         })
-        this.setState({tasks: newTasks});
       },
     });
   }
 
   handle_user_submit(event) {
-    event.preventDefault();
+    event.preventDefault()
     var formData = new FormData(event.target);
     var object = {};
     formData.forEach(function(value, key){
@@ -100,6 +111,16 @@ class Root extends React.Component {
       dataType: "json",
       contentType: "application/json; charset=UTF-8",
       data: data,
+      success: (resp) => {
+        store.dispatch({
+          type: 'USER_ADD',
+          data: resp.data,
+        })
+        history.push("/users")
+      },
+      error: () => {
+        alert("Username already exists")
+      },
     });
   }
 
@@ -117,6 +138,17 @@ class Root extends React.Component {
       dataType: "json",
       contentType: "application/json; charset=UTF-8",
       data: data,
+      headers: {"x-auth": this.props.session.token},
+      error: () => {
+        alert("Need Authorization")
+      },
+      success: (resp) => {
+        store.dispatch({
+          type: 'TASK_ADD',
+          data: resp.data,
+        })
+        history.push("/")
+      },
     });
   }
 
@@ -125,26 +157,26 @@ class Root extends React.Component {
     $.ajax("/api/v1/tasks/"+task.id, {
       method: "put",
       dataType: "json",
+      headers: {"x-auth": this.props.session.token},
       contentType: "application/json; charset=UTF-8",
       data: JSON.stringify({task}),
+      error: () => {
+        alert("Need Authorization")
+      },
       success: (resp) => {
-        let newTasks = this.state.tasks.map((t) => {
-          if (t.id === resp.data.id) {
-            return resp.data
-          }
-          else {
-            return t
-          }
+        store.dispatch({
+          type: 'TASK_EDIT',
+          data: resp.data,
         })
-        this.setState({tasks: newTasks});
       },
     });
   }
 
   logout() {
     this.update_login_form({email: "", password: ""})
-    let state1 = _.assign({}, this.state, { session: null });
-    this.setState(state1);
+    store.dispatch({
+      type: 'CANCEL_SESSION',
+    })
   }
 
   update_login_form(data) {
@@ -160,29 +192,29 @@ class Root extends React.Component {
       contentType: "application/json; charset=UTF-8",
       data: "",
       success: (resp) => {
-        let state1 = _.assign({}, this.state, { users: resp.data });
-        this.setState(state1);
+        store.dispatch({
+          type: 'USER_LIST',
+          data: resp.data,
+        })
       },
     });
   }
 
   render() {
-    return <Router>
-      <div>
-        <Header session={this.state.session} root={this}/>
+    return <div>
+        <Header root={this}/>
         <Route path="/" exact={true} render={() =>
-          <TaskList root={this} tasks={this.state.tasks} />
+          <TaskList root={this} />
         } />
         <Route path="/users" exact={true} render={() =>
-          <UserList users={this.state.users} />
+          <UserList />
         } />
         <Route path="/users/new" exact={true} render={() =>
-          <UserForm root={this}/>
+          <UserForm root={this} />
         } />
         <Route path="/tasks/new" exact={true} render={() =>
-          <TaskForm users={this.state.users} root={this}/>
+          <TaskForm root={this}/>
         } />
-      </div>
-    </Router>;
+      </div>;
   }
 }

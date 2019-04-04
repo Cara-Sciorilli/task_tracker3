@@ -4,6 +4,7 @@ defmodule TaskTracker3Web.TaskController do
   alias TaskTracker3.Tasks
   alias TaskTracker3.Tasks.Task
 
+  plug TaskTracker3Web.Plugs.RequireAuth when action in [:create, :update, :delete]
   action_fallback TaskTracker3Web.FallbackController
 
   def index(conn, _params) do

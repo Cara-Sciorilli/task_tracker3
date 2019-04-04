@@ -10,7 +10,7 @@ Design Choices:
   * When a user is logged in, their name is at the top
   * If a user doesn't exist when trying to log in or uses the wrong password an alert comes up.
   * UI : Changed the font, Added descriptions of what the user can do at every page, Prettier colors, Tasks are cards
-  
+
 To start your Phoenix server:
 
   * Install dependencies with `mix deps.get`

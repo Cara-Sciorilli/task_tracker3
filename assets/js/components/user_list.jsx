@@ -1,10 +1,11 @@
 import React from 'react';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 
-export default function UserList(props) {
+export default connect(({users}) => { return {users};})((props) => {
   let rows=_.map(props.users, (u) => <User key={u.id} user={u} />);
-  return <div class="container">
+  return <div className="container">
   <div className="row">
     <h2></h2>
   </div>
@@ -29,7 +30,7 @@ export default function UserList(props) {
     </div>
   </div>
   </div>;
-}
+});
 
 function User(props) {
   let {user} = props;

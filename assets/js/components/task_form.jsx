@@ -1,6 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import $ from 'jquery';
+import { connect } from 'react-redux';
 
 class TaskForm extends React.Component {
   constructor(props){
@@ -15,7 +16,7 @@ class TaskForm extends React.Component {
     let usersSelect = _.map(this.state.users, (u) => <option key={u.id} value={u.id}> {u.email} </option>);
 
     return (
-      <div class="container">
+      <div className="container">
         <div className="row">
           <h2></h2>
         </div>
@@ -52,4 +53,7 @@ class TaskForm extends React.Component {
   }
 }
 
-export default TaskForm;
+function state2props(state) {
+  return {users: state.users}
+}
+export default connect(state2props)(TaskForm);

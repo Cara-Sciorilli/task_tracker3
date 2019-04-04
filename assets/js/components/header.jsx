@@ -1,11 +1,12 @@
 import React from 'react';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 
-export default function Header(props) {
+const Header = (props) => {
   let {root, session} = props;
   let session_info;
-  if(session == null) {
+  if(!session.token) {
     session_info = <div className="form-inline my-2">
       <input type="email" placeholder="email" onChange={(ev) => root.update_login_form({email: ev.target.value})} />
       <input type="password" placeholder="password" onChange={(ev) => root.update_login_form({password: ev.target.value})} />
@@ -27,10 +28,10 @@ export default function Header(props) {
       <div className="col-4">
         <ul className="navbar-nav mr-auto">
           <li className="nav-item">
-            <Link to={"/users"} class="nav-link">Users</Link>
+            <Link to={"/users"} className="nav-link">Users</Link>
           </li>
           <li className="nav-item">
-            <Link to={"/"} class="nav-link">Tasks</Link>
+            <Link to={"/"} className="nav-link">Tasks</Link>
           </li>
         </ul>
       </div>
@@ -44,3 +45,8 @@ export default function Header(props) {
   </div>
 )
 }
+
+function state2props(state) {
+  return {session: state.session}
+}
+export default connect(state2props)(Header);

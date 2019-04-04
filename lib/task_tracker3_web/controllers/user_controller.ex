@@ -12,6 +12,9 @@ defmodule TaskTracker3Web.UserController do
   end
 
   def create(conn, %{"user" => user_params}) do
+    password = user_params["password"]
+    user_params = Map.delete(user_params, "password")
+                  |> Map.put("password_hash", Argon2.hash_pwd_salt(password))
     with {:ok, %User{} = user} <- Users.create_user(user_params) do
       conn
       |> put_status(:created)

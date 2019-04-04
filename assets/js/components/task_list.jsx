@@ -3,12 +3,10 @@ import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-export default function TaskList(props) {
-  // TODO:
-  //let {tasks, dispatch} = props;
-  let {root, tasks} = props;
-  tasks = _.map(tasks, (t) => <Task key={t.id} root={root} task={t} />);
-  return <div class="container">
+const TaskList = (props) => {
+  let {root, tasks, users} = props;
+  tasks = _.map(tasks, (t) => <Task key={t.id} users={users} root={root} task={t} />);
+  return <div className="container">
     <div className="row">
       <h2></h2>
     </div>
@@ -22,11 +20,18 @@ export default function TaskList(props) {
 }
 
 function Task(props) {
-  let {root, task} = props;
+  let {root, task, users} = props;
+  let user = ""
+  if (task.user_id) {
+    users = _.filter(users, (u) => task.user_id === u.id);
+    if (users[0]) {
+      user = users[0].email;
+    }
+  }
   let completed = "No"
   let button = <button className="btn btnView" onClick={() => root.mark_complete(task)}>Mark Complete</button>;
   let timeTitle = "Enter New Time Taken:";
-  let trackTime = <input type="number" step="15" onChange={(ev) => root.track_time(task, ev.target.value)}/>;
+  let trackTime = <input type="number" value={task.time} step="15" onChange={(ev) => root.track_time(task, ev.target.value)}/>;
   let line = <br/>;
   if (task.complete) {
     completed = "Yes"
@@ -41,7 +46,7 @@ function Task(props) {
       <p className="card-text">
       {task.desc}
       <br/>
-      User: {task.user_id}
+      User: {user}
       <br/>
       Time: {task.time}
       <br/>
@@ -55,3 +60,11 @@ function Task(props) {
     </div>
   </div>;
 }
+
+function state2props(state) {
+  return {
+    tasks: state.tasks,
+    users: state.users
+  }
+}
+export default connect(state2props)(TaskList);

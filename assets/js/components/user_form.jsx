@@ -12,7 +12,7 @@ class UserForm extends React.Component {
 
   render() {
     return (
-      <div class="container">
+      <div className="container">
         <div className="row">
           <h2></h2>
         </div>
@@ -21,8 +21,8 @@ class UserForm extends React.Component {
           <input id="email" name="email" type="email" />
           <br/>
           <br/>
-          <label htmlFor="password_hash">Enter Password: </label>
-          <input id="password_hash" name="password_hash" type="password" />
+          <label htmlFor="password">Enter Password: </label>
+          <input id="password" name="password" type="password" />
           <br/>
           <br/>
           <button className="btn btn-info">Submit New User</button>

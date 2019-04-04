@@ -24,7 +24,5 @@ import store from "./store";
 
 $(() => {
   let node = $('#root')[0];
-  root_init(node);
-  //TODO
-  //root_init(node, store);
+  root_init(node, store);
 })
