@@ -1,0 +1,16 @@
+[Unit]
+Description=Task Tracker 3 Redo
+
+[Service]
+Type=simple
+User=task_tracker3_redo
+Group=task_tracker3_redo
+Restart=on-failure
+Environment=MIX_ENV=prod "PORT=4797"
+Environment=LANG=en_US.UTF-8
+
+WorkingDirectory=/home/task_tracker3_redo/task_tracker3
+ExecStart=/home/task_tracker3_redo/task_tracker3/start.sh
+
+[Install]
+WantedBy=multi-user.target
